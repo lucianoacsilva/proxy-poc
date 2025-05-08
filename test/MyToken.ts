@@ -43,6 +43,46 @@ describe("MyToken", () => {
             )).not.to.be.null;
         });
 
+        it("Should not pause, since it is not admin", async () => {
+            MyToken = await ethers.getContractFactory("MyToken");
+            const accounts = await ethers.getSigners();
+            const [owner, addr1, addr2] = accounts;
+
+            const proxy = await upgrades.deployProxy(
+                MyToken,
+                [addr1.address],
+                {
+                    initializer: "initialize",
+                    kind: "uups"
+                }
+            );
+
+            proxy.connect(addr2);
+
+            await expect(proxy.pause(), "Consider restrict access of method pause").to.reverted;
+        });
+
+        it("Should pause, since it is admin", async () => {
+            MyToken = await ethers.getContractFactory("MyToken");
+            const accounts = await ethers.getSigners();
+            const [owner, addr1, addr2] = accounts;
+
+            const proxy = await upgrades.deployProxy(
+                MyToken,
+                [addr1.address],
+                {
+                    initializer: "initialize",
+                    kind: "uups"
+                }
+            );
+
+            proxy.connect(addr1);
+
+            await expect(proxy.pause(), "Consider restrict access of method pause").to.be.ok;
+        });
+
+
+
     });
 
 }); 

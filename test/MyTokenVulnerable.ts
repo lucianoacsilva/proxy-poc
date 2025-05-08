@@ -4,7 +4,7 @@ import { MyToken, MyToken__factory } from "../typechain-types";
 
 
 
-describe("MyToken", () => {
+describe("MyTokenVulnerable", () => {
     let MyToken: MyToken__factory;
     let myToken: MyToken;
 
@@ -45,23 +45,42 @@ describe("MyToken", () => {
             )).to.be.ok;
         });
 
-        it("Should reject since it has the same address", async () => {
+        it("Should not pause, since it is not admin", async () => {
             MyToken = await ethers.getContractFactory("MyTokenVulnerable");
             const accounts = await ethers.getSigners();
             const [owner, addr1, addr2] = accounts;
 
-            
-                await upgrades.deployProxy(
-                    MyToken,
-                    [addr1.address],
-                    {
-                        initializer: "initialize",
-                        kind: "uups"
-                    }
-                );
+            const proxy = await upgrades.deployProxy(
+                MyToken,
+                [addr1.address],
+                {
+                    initializer: "initialize",
+                    kind: "uups"
+                }
+            );
 
-                
-                
+            proxy.connect(addr2);
+
+            await expect(proxy.pause(), "Consider restrict access of method pause").not.to.be.ok;
+        });
+
+        it("Should pause, since it is admin", async () => {
+            MyToken = await ethers.getContractFactory("MyTokenVulnerable");
+            const accounts = await ethers.getSigners();
+            const [owner, addr1, addr2] = accounts;
+
+            const proxy = await upgrades.deployProxy(
+                MyToken,
+                [addr1.address],
+                {
+                    initializer: "initialize",
+                    kind: "uups"
+                }
+            );
+
+            proxy.connect(addr1);
+
+            await expect(proxy.pause(), "Consider restrict access of method pause").to.be.ok;
         });
 
     });
