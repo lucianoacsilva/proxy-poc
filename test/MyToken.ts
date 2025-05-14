@@ -10,7 +10,7 @@ describe("MyToken", () => {
 
 
 
-    describe("Deploying contract", () => {
+    describe("Healthy contract", () => {
         it("Should reject since it has the same address", async () => {
             MyToken = await ethers.getContractFactory("MyToken");
             const accounts = await ethers.getSigners();

@@ -10,7 +10,7 @@ describe("MyTokenVulnerable", () => {
 
 
 
-    describe("Deploying contract", () => {
+    describe("Vulnerable contract", () => {
         it("Should reject since it has the same address", async () => {
             MyToken = await ethers.getContractFactory("MyTokenVulnerable");
             const accounts = await ethers.getSigners();
