@@ -8,13 +8,19 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract MyTokenVulnerable is Initializable, ERC721Upgradeable, ERC721PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract MyTokenVulnerable is
+    Initializable,
+    ERC721Upgradeable,
+    ERC721PausableUpgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) public initializer {        
+    function initialize(address initialOwner) public initializer {
         __ERC721_init("MyToken", "MTK");
         __ERC721Pausable_init();
         __Ownable_init(initialOwner);
@@ -33,15 +39,15 @@ contract MyTokenVulnerable is Initializable, ERC721Upgradeable, ERC721PausableUp
         _safeMint(to, tokenId);
     }
 
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlyOwner
-    {}
+    function _authorizeUpgrade(address newImplementation) internal override {}
 
     // The following functions are overrides required by Solidity.
 
-    function _update(address to, uint256 tokenId, address auth)
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    )
         internal
         override(ERC721Upgradeable, ERC721PausableUpgradeable)
         returns (address)
